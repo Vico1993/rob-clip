@@ -1,22 +1,25 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
+	"log"
 	"os"
+	"os/exec"
+	"time"
 
 	tea "github.com/charmbracelet/bubbletea"
 )
 
 type model struct {
-    choices  []string           // items on the to-do list
-    cursor   int                // which to-do list item our cursor is pointing at
-    selected map[int]struct{}   // which to-do items are selected
+    previousCopy  []string
+    cursor   int
+    selected map[int]struct{}
 }
 
 func initialModel() model {
 	return model{
-		// Our shopping list is a grocery list
-		choices:  []string{"Buy carrots", "Buy celery", "Buy kohlrabi"},
+		previousCopy:  []string{},
 
 		// A map which indicates which choices are selected. We're using
 		// the  map like a mathematical set. The keys refer to the indexes
@@ -29,7 +32,6 @@ func (m model) Init() tea.Cmd {
     // Just return `nil`, which means "no I/O right now, please."
     return nil
 }
-
 
 func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
     switch msg := msg.(type) {
@@ -52,7 +54,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
         // The "down" and "j" keys move the cursor down
         case "down", "j":
-            if m.cursor < len(m.choices)-1 {
+            if m.cursor < len(m.previousCopy)-1 {
                 m.cursor++
             }
 
@@ -66,7 +68,18 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
                 m.selected[m.cursor] = struct{}{}
             }
         }
-    }
+
+	case string:
+		if (len(m.previousCopy) == 0) {
+			m.previousCopy = append(m.previousCopy, msg)
+		} else {
+			latestCopy := m.previousCopy[len(m.previousCopy) -1]
+
+			if (latestCopy != msg) {
+				m.previousCopy = append(m.previousCopy, msg)
+			}
+		}
+	}
 
     // Return the updated model to the Bubble Tea runtime for processing.
     // Note that we're not returning a command.
@@ -75,10 +88,10 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 func (m model) View() string {
     // The header
-    s := "What should we buy at the market?\n\n"
+    s := "What did I copy before?\n\n"
 
     // Iterate over our choices
-    for i, choice := range m.choices {
+    for i, choice := range m.previousCopy {
 
         // Is the cursor pointing at this choice?
         cursor := " " // no cursor
@@ -103,8 +116,34 @@ func (m model) View() string {
     return s
 }
 
+func getClipValue() string {
+	cmd := exec.Command("pbpaste")
+
+	stdout, err := cmd.StdoutPipe()
+	if err != nil {
+		log.Fatal(err)
+	}
+	cmd.Start()
+	buf := bufio.NewReader(stdout) // Notice that this is not in a loop
+
+	line, _, _ := buf.ReadLine()
+
+	return string(line)
+}
+
 func main() {
     p := tea.NewProgram(initialModel())
+
+	// Every Second
+	go func() {
+		for {
+			pause := time.Duration(1 * time.Second)
+			time.Sleep(pause)
+
+			p.Send(getClipValue())
+		}
+	}()
+
     if err := p.Start(); err != nil {
         fmt.Printf("Alas, there's been an error: %v", err)
         os.Exit(1)
