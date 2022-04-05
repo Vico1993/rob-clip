@@ -12,51 +12,52 @@ type clipboardHistory struct {
     selected map[int]struct{}
 }
 
+func (c clipboardHistory) navigationKey(key string) (tea.Model, tea.Cmd) {
+	// Cool, what was the actual key pressed?
+	switch key {
+
+		// These keys should exit the program.
+		case "ctrl+c", "q":
+			return c, tea.Quit
+
+		// The "up" and "k" keys move the cursor up
+		case "up", "k":
+			if c.cursor > 0 {
+				c.cursor--
+			}
+
+		// The "down" and "j" keys move the cursor down
+		case "down", "j":
+			if c.cursor < len(c.list)-1 {
+				c.cursor++
+			}
+
+		// The "enter" key and the spacebar (a literal space) toggle
+		// the selected state for the item that the cursor is pointing at.
+		case "enter", " ":
+			_, ok := c.selected[c.cursor]
+			if ok {
+				delete(c.selected, c.cursor)
+			} else {
+				c.selected[c.cursor] = struct{}{}
+			}
+	}
+
+	return c, nil
+}
+
 func (c clipboardHistory) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
     switch msg := msg.(type) {
-
         // Is it a key press?
         case tea.KeyMsg:
-            // Cool, what was the actual key pressed?
-            switch msg.String() {
-
-                // These keys should exit the program.
-                case "ctrl+c", "q":
-                    return c, tea.Quit
-
-                // The "up" and "k" keys move the cursor up
-                case "up", "k":
-                    if c.cursor > 0 {
-                        c.cursor--
-                    }
-
-                // The "down" and "j" keys move the cursor down
-                case "down", "j":
-                    if c.cursor < len(c.list)-1 {
-                        c.cursor++
-                    }
-
-                // The "enter" key and the spacebar (a literal space) toggle
-                // the selected state for the item that the cursor is pointing at.
-                case "enter", " ":
-                    _, ok := c.selected[c.cursor]
-                    if ok {
-                        delete(c.selected, c.cursor)
-                    } else {
-                        c.selected[c.cursor] = struct{}{}
-                    }
-            }
+            return c.navigationKey(msg.String())
 
         case string:
-            if (len(c.list) == 0) {
-                c.list = append(c.list, msg)
-            } else {
-                latestCopy := c.list[len(c.list) -1]
+            latestCopy := c.list[len(c.list) -1]
 
-                if (latestCopy != msg) {
-                    c.list = append(c.list, msg)
-                }
-            }
+			if (latestCopy != msg) {
+				c.list = append(c.list, msg)
+			}
 	}
 
     // Return the updated model to the Bubble Tea runtime for processing.
