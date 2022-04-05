@@ -123,7 +123,12 @@ func getClipValue() string {
 	if err != nil {
 		log.Fatal(err)
 	}
-	cmd.Start()
+	err = cmd.Start()
+    if err != nil {
+		log.Fatal(err)
+        os.Exit(1)
+	}
+
 	buf := bufio.NewReader(stdout) // Notice that this is not in a loop
 
 	line, _, _ := buf.ReadLine()
