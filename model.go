@@ -5,6 +5,7 @@ import (
 	"time"
 
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/charmbracelet/lipgloss"
 )
 
 type Copyed struct {
@@ -81,7 +82,7 @@ func (c clipboardHistory) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 func (c clipboardHistory) View() string {
     // The header
-    s := "📝 The is your clipboard history? 📝\n\n"
+    s := "The is your clipboard history? 📝\n\n"
 
     // Iterate over our choices
     for i, choice := range c.list {
@@ -99,7 +100,14 @@ func (c clipboardHistory) View() string {
         }
 
         // Render the row
-        s += fmt.Sprintf("%s [%s] %s - %s\n", cursor, checked, choice.word, choice.date.Format("2006-01-02 15:04:05"))
+        s += fmt.Sprintf(
+            lipgloss.NewStyle().Bold(true).Render("%s [%s] %s"),
+            cursor,checked,choice.word,
+        )
+        s += fmt.Sprintln(
+            lipgloss.NewStyle().Italic(true).Render(" -"),
+            choice.date.Format("2006-01-02 15:04:05"),
+        )
     }
 
     // The footer
