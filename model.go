@@ -2,12 +2,18 @@ package main
 
 import (
 	"fmt"
+	"time"
 
 	tea "github.com/charmbracelet/bubbletea"
 )
 
+type Copyed struct {
+    word string
+    date time.Time
+}
+
 type clipboardHistory struct {
-    list  []string
+    list  []Copyed
     cursor   int
     selected map[int]struct{}
 }
@@ -52,12 +58,14 @@ func (c clipboardHistory) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
         case tea.KeyMsg:
             return c.navigationKey(msg.String())
 
-        case string:
-            latestCopy := c.list[len(c.list) -1]
+        case Copyed:
+            // latestCopy := c.list[len(c.list) -1]
 
-			if (latestCopy != msg) {
-				c.list = append(c.list, msg)
-			}
+			// if (latestCopy != msg) {
+			// 	c.list = append(c.list, msg)
+			// }
+
+            c.list = append(c.list, msg)
 	}
 
     // Return the updated model to the Bubble Tea runtime for processing.
@@ -85,7 +93,7 @@ func (c clipboardHistory) View() string {
         }
 
         // Render the row
-        s += fmt.Sprintf("%s [%s] %s\n", cursor, checked, choice)
+        s += fmt.Sprintf("%s [%s] %s - %s\n", cursor, checked, choice.word, choice.date.Format("2006-01-02 15:04:05"))
     }
 
     // The footer

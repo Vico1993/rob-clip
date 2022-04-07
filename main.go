@@ -18,7 +18,10 @@ func main() {
 			pause := time.Duration(1 * time.Second)
 			time.Sleep(pause)
 
-			p.Send(GetValue())
+			p.Send(Copyed{
+				word: GetValue(),
+				date: time.Now(),
+			})
 		}
 	}()
 
