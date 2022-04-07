@@ -18,6 +18,16 @@ type clipboardHistory struct {
     selected map[int]struct{}
 }
 
+func (c clipboardHistory) findWordInList(word string) bool {
+    for i := 0; i < len(c.list); i++ {
+        if c.list[i].word == word {
+            return false
+        }
+    }
+
+    return true
+}
+
 func (c clipboardHistory) navigationKey(key string) (tea.Model, tea.Cmd) {
 	// Cool, what was the actual key pressed?
 	switch key {
@@ -59,13 +69,9 @@ func (c clipboardHistory) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
             return c.navigationKey(msg.String())
 
         case Copyed:
-            // latestCopy := c.list[len(c.list) -1]
-
-			// if (latestCopy != msg) {
-			// 	c.list = append(c.list, msg)
-			// }
-
-            c.list = append(c.list, msg)
+            if (c.findWordInList(msg.word)) {
+                c.list = append(c.list, msg)
+            }
 	}
 
     // Return the updated model to the Bubble Tea runtime for processing.
