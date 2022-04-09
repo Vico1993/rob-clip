@@ -24,5 +24,7 @@ func GetValue() string {
 
 	line, _, _ := buf.ReadLine()
 
+	cmd.Process.Kill()
+
 	return string(line)
 }
