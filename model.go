@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"time"
 
 	tea "github.com/charmbracelet/bubbletea"
@@ -70,7 +71,11 @@ func (c clipboardHistory) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
             return c.navigationKey(msg.String())
 
         case Copyed:
+            log.Println("Receive something.")
+
             if (c.findWordInList(msg.word)) {
+                log.Println("New copy came in")
+
                 c.list = append(c.list, msg)
             }
 	}
