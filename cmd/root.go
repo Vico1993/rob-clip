@@ -6,18 +6,21 @@ import (
 	"github.com/spf13/cobra"
 )
 
+var list = []string{}
+
 var rootCmd = &cobra.Command{
 	Use:   "rob-clip",
 	Short: "Rob-clip is tool that will help you with your clipboard history",
-	Long: `Coming soon...`,
 }
 
 func init() {
 	rootCmd.AddCommand(listCmd)
-	rootCmd.AddCommand(stopCmd)
+	// rootCmd.AddCommand(stopCmd)
 }
 
-func Execute() {
+func Execute(l []string) {
+	list = l
+
 	if err := rootCmd.Execute(); err != nil {
 		os.Exit(1)
 	}

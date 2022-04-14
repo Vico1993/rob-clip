@@ -7,23 +7,35 @@ import (
 	"time"
 
 	"github.com/sevlyar/go-daemon"
+	"github.com/spf13/viper"
 )
 
 var (
+	start = false
 	stop = make(chan struct{})
 	done = make(chan struct{})
 )
+
+func findWordInList(word string) bool {
+    for i := 0; i < len(list); i++ {
+        if list[i] == word {
+            return false
+        }
+    }
+
+    return true
+}
 
 func worker() {
 LOOP:
 	for {
 		log.Println("Populating model...")
 
-		// TODO: Check the list to not add twice same value
-		list = append(list, Copyed{
-			word: GetValue(),
-			date: time.Now(),
-		})
+		word := GetValue()
+
+		if (findWordInList(word)) {
+			list = append(list, GetValue())
+		}
 
 		// Every Second
 		time.Sleep(time.Second)
@@ -48,6 +60,20 @@ func startDaemon() {
 		Args:        []string{"[rob-clip]"},
 	}
 
+	deamon := viper.GetBool("DEAMON_STARTED")
+	log.Println(deamon)
+
+	if deamon {
+		log.Println("Yoohoo ici")
+		d, err := cntxt.Search()
+		if err != nil {
+			log.Printf("Unable send signal to the daemon: %s", err.Error())
+		}
+
+		daemon.SendCommands(d)
+		return
+	}
+
 	d, err := cntxt.Reborn()
 	if err != nil {
 		log.Fatalln(err)
@@ -61,6 +87,13 @@ func startDaemon() {
 	log.Println("- - - - - - - - - - - - - - -")
 	log.Println("daemon started")
 
+	viper.Set("DEAMON_STARTED", "true")
+	err = viper.WriteConfig()
+
+	if err != nil {
+		log.Fatalln(err.Error())
+	}
+
 	go worker()
 
 	err = daemon.ServeSignals()
@@ -69,6 +102,8 @@ func startDaemon() {
 	}
 
 	log.Println("daemon terminated")
+
+	log.Println("DEAMONE WAS REBORN")
 }
 
 func stopDaemon(sig os.Signal) error {
