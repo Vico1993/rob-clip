@@ -11,7 +11,6 @@ import (
 )
 
 var (
-	start = false
 	stop = make(chan struct{})
 	done = make(chan struct{})
 )
@@ -49,15 +48,14 @@ LOOP:
 
 func startDaemon() {
 	cntxt := &daemon.Context{
-		PidFileName: "sample.pid",
+		PidFileName: getConfigFolder() + "/daemon.pid",
 		PidFilePerm: 0644,
-		LogFileName: "sample.log",
+		LogFileName: getConfigFolder() + "/daemon.log",
 		LogFilePerm: 0640,
-		WorkDir:     "./",
+		WorkDir:     getConfigFolder(),
 		Umask:       027,
 		Args:        []string{"[rob-clip]"},
 	}
-
 
 	if viper.GetBool("DEAMON_STARTED") {
 		d, err := cntxt.Search()
