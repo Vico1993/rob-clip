@@ -2,8 +2,6 @@ package main
 
 import (
 	"log"
-	"os"
-	"syscall"
 	"time"
 
 	"github.com/sevlyar/go-daemon"
@@ -63,7 +61,10 @@ func startDaemon() {
 			log.Printf("Unable send signal to the daemon: %s", err.Error())
 		}
 
-		daemon.SendCommands(d)
+		err = daemon.SendCommands(d)
+		if err != nil {
+			log.Fatalln("Can't send commands: " + err.Error())
+		}
 		return
 	}
 
@@ -81,8 +82,8 @@ func startDaemon() {
 	log.Println("daemon started")
 
 	viper.Set("DEAMON_STARTED", "true")
-	viper.WriteConfig()
 
+	err = viper.WriteConfig()
 	if err != nil {
 		log.Fatalln(err.Error())
 	}
@@ -96,13 +97,4 @@ func startDaemon() {
 
 	log.Println("daemon terminated")
 	log.Println("DEAMONE WAS REBORN")
-}
-
-func stopDaemon(sig os.Signal) error {
-	log.Println("terminating...")
-	stop <- struct{}{}
-	if sig == syscall.SIGQUIT {
-		<-done
-	}
-	return daemon.ErrStop
 }

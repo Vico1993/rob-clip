@@ -45,7 +45,10 @@ func initConfig () {
 
 		// Set default
 		viper.Set("DEAMON_STARTED", false)
-		viper.WriteConfigAs(configFilePath)
+		err = viper.WriteConfigAs(configFilePath)
+		if err != nil {
+			log.Fatal("Can't write value in config file at " + err.Error())
+		}
 	}
 
 	viper.SetConfigFile(getConfigFilePath())

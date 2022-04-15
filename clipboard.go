@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"fmt"
 	"log"
 	"os"
 	"os/exec"
@@ -24,7 +25,10 @@ func GetValue() string {
 
 	line, _, _ := buf.ReadLine()
 
-	cmd.Process.Kill()
+	err = cmd.Process.Kill()
+	if err != nil {
+		fmt.Println("Error killing process: " + err.Error())
+	}
 
 	return string(line)
 }
