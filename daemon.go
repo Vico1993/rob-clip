@@ -29,8 +29,6 @@ func findWordInList(word string) bool {
 func worker() {
 LOOP:
 	for {
-		log.Println("Populating model...")
-
 		word := GetValue()
 
 		if (findWordInList(word)) {
@@ -60,11 +58,8 @@ func startDaemon() {
 		Args:        []string{"[rob-clip]"},
 	}
 
-	deamon := viper.GetBool("DEAMON_STARTED")
-	log.Println(deamon)
 
-	if deamon {
-		log.Println("Yoohoo ici")
+	if viper.GetBool("DEAMON_STARTED") {
 		d, err := cntxt.Search()
 		if err != nil {
 			log.Printf("Unable send signal to the daemon: %s", err.Error())
@@ -88,7 +83,7 @@ func startDaemon() {
 	log.Println("daemon started")
 
 	viper.Set("DEAMON_STARTED", "true")
-	err = viper.WriteConfig()
+	viper.WriteConfig()
 
 	if err != nil {
 		log.Fatalln(err.Error())
@@ -102,7 +97,6 @@ func startDaemon() {
 	}
 
 	log.Println("daemon terminated")
-
 	log.Println("DEAMONE WAS REBORN")
 }
 
