@@ -7,11 +7,4 @@ So I can try the [bubbleTea framework](https://github.com/charmbracelet/bubblete
 
 ## TODO
 
--   Re-Structure the project (WIP)
-    -   ⚠️ REALLY NEED CLEAN CODE ⚠️
-    -   Switch to a Cobra base app.
-    -   That will luanch to daemon at initialisation
--   When enter on the list, set the old value to the clipboard
--   Daemon with a command ?
-    -   Update command ? That will pull the last release from Github ?
--   Unit Test ??
+Look into the [github projects](https://github.com/Vico1993/rob-clip/projects/2)
