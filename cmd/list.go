@@ -10,8 +10,6 @@ import (
 	"github.com/fsnotify/fsnotify"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-
-	"github.com/charmbracelet/lipgloss"
 )
 
 
@@ -92,10 +90,14 @@ func (c clipboardHistory) View() string {
         }
 
         // Render the row
-        s += fmt.Sprintf(
-            lipgloss.NewStyle().Bold(true).Render("%s [%s] %s"),
-            cursor,checked,choice,
-        )
+        // s += fmt.Sprintf(
+        //     lipgloss.NewStyle().Bold(true).Render("%s [%s] %s"),
+        //     cursor,checked,choice,
+        // )
+
+		// Render the row
+        s += fmt.Sprintf("%s [%s] %s\n", cursor, checked, choice)
+
         // s += fmt.Sprintln(
         //     lipgloss.NewStyle().Italic(true).Render(" -"),
         //     choice.date.Format("2006-01-02 15:04:05"),
