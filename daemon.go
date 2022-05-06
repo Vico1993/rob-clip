@@ -13,14 +13,14 @@ var (
 	done = make(chan struct{})
 )
 
-func findWordInList(word string) bool {
+func isWordAlreadyInList(word string) bool {
     for i := 0; i < len(list); i++ {
         if list[i] == word {
-            return false
+            return true
         }
     }
 
-    return true
+    return false
 }
 
 func worker() {
@@ -28,8 +28,14 @@ LOOP:
 	for {
 		word := GetValue()
 
-		if (findWordInList(word)) {
+		if (!isWordAlreadyInList(word)) {
 			list = append(list, GetValue())
+
+			viper.Set("DAEMON_WORD", list)
+			err := viper.WriteConfigAs(getConfigFilePath())
+			if err != nil {
+				log.Fatal("Can't write value in config file at " + err.Error())
+			}
 		}
 
 		// Every Second
