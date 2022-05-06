@@ -5,4 +5,5 @@ linters:
 linters-settings:
     errcheck:
         exclude-functions:
+            # Exclude because of the defer
             - (*github.com/sevlyar/go-daemon.Context).Release
