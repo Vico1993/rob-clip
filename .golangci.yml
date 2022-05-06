@@ -1,0 +1,8 @@
+linters:
+    enable:
+        - errcheck
+
+linters-settings:
+    errcheck:
+        exclude-functions:
+            - (*github.com/sevlyar/go-daemon.Context).Release
