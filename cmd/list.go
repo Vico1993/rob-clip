@@ -7,7 +7,9 @@ import (
 	"fmt"
 
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/fsnotify/fsnotify"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 
 	"github.com/charmbracelet/lipgloss"
 )
@@ -127,7 +129,18 @@ var listCmd = &cobra.Command{
 	Use:   "list",
 	Short: "List all copy from your past",
 	Run: func(cmd *cobra.Command, args []string) {
+		list := viper.GetStringSlice("daemon_word")
+
 		p := tea.NewProgram(initialModel(list))
+
+		viper.OnConfigChange(func(e fsnotify.Event) {
+			newlist := viper.GetStringSlice("daemon_word")
+
+			fmt.Println("Config Changed!")
+
+			p.Send(newlist[len(newlist)-1])
+		})
+		viper.WatchConfig()
 
 		if err := p.Start(); err != nil {
 			log.Printf("Alas, there's been an error: %v", err)
