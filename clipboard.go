@@ -31,6 +31,11 @@ func GetValue() string {
 		block += scanner.Text()
 	}
 
+	err = cmd.Wait()
+	if err != nil {
+		fmt.Println("Error Waiting process: " + err.Error())
+	}
+
 	err = cmd.Process.Kill()
 	if err != nil {
 		fmt.Println("Error killing process: " + err.Error())
