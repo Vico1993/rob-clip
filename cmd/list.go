@@ -7,10 +7,16 @@ import (
 	"fmt"
 
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/charmbracelet/lipgloss"
 	"github.com/fsnotify/fsnotify"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
+
+var listStyle = lipgloss.NewStyle().
+	Bold(true).
+	Width(24).
+	Align(lipgloss.Left);
 
 
 type clipboardHistory struct {
@@ -60,8 +66,6 @@ func (c clipboardHistory) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
             return c.navigationKey(msg.String())
 
         case string:
-            log.Println("Receive something.")
-
 			c.list = append(c.list, msg)
 	}
 
@@ -90,18 +94,10 @@ func (c clipboardHistory) View() string {
         }
 
         // Render the row
-        // s += fmt.Sprintf(
-        //     lipgloss.NewStyle().Bold(true).Render("%s [%s] %s"),
-        //     cursor,checked,choice,
-        // )
-
-		// Render the row
-        s += fmt.Sprintf("%s [%s] %s\n", cursor, checked, choice)
-
-        // s += fmt.Sprintln(
-        //     lipgloss.NewStyle().Italic(true).Render(" -"),
-        //     choice.date.Format("2006-01-02 15:04:05"),
-        // )
+        s += fmt.Sprintf(
+            listStyle.Render("%s [%s] %s\n"),
+			cursor,checked,choice,
+        )
     }
 
     // The footer
@@ -137,8 +133,6 @@ var listCmd = &cobra.Command{
 
 		viper.OnConfigChange(func(e fsnotify.Event) {
 			newlist := viper.GetStringSlice("daemon_word")
-
-			fmt.Println("Config Changed!")
 
 			p.Send(newlist[len(newlist)-1])
 		})

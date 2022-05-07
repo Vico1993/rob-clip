@@ -21,14 +21,20 @@ func GetValue() string {
         os.Exit(1)
 	}
 
-	buf := bufio.NewReader(stdout) // Notice that this is not in a loop
+	block := ""
+	scanner := bufio.NewScanner(bufio.NewReader(stdout))
+	for scanner.Scan() {
+		if block != "" {
+			block += "\n"
+		}
 
-	line, _, _ := buf.ReadLine()
+		block += scanner.Text()
+	}
 
 	err = cmd.Process.Kill()
 	if err != nil {
 		fmt.Println("Error killing process: " + err.Error())
 	}
 
-	return string(line)
+	return block
 }

@@ -102,5 +102,4 @@ func startDaemon() {
 	}
 
 	log.Println("daemon terminated")
-	log.Println("DEAMONE WAS REBORN")
 }
