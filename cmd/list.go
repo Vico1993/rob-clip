@@ -15,8 +15,7 @@ import (
 
 var listStyle = lipgloss.NewStyle().
 	Bold(true).
-	Width(24).
-	Align(lipgloss.Left);
+	Align(lipgloss.Center);
 
 
 type clipboardHistory struct {
@@ -95,9 +94,11 @@ func (c clipboardHistory) View() string {
 
         // Render the row
         s += fmt.Sprintf(
-            listStyle.Render("%s [%s] %s\n"),
+            listStyle.Render("%s [%s] %s"),
 			cursor,checked,choice,
         )
+
+		s += fmt.Sprint("\n")
     }
 
     // The footer
