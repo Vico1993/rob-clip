@@ -98,7 +98,7 @@ func (c clipboardHistory) View() string {
 			cursor,checked,choice,
         )
 
-		s += fmt.Sprint("\n")
+		s += fmt.Sprint(" \n")
     }
 
     // The footer

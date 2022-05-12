@@ -6,8 +6,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var list = []string{}
-
 var rootCmd = &cobra.Command{
 	Use:   "rob-clip",
 	Short: "Rob-clip is tool that will help you with your clipboard history",
