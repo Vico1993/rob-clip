@@ -18,9 +18,7 @@ func init() {
 	rootCmd.AddCommand(stopCmd)
 }
 
-func Execute(l []string) {
-	list = l
-
+func Execute() {
 	if err := rootCmd.Execute(); err != nil {
 		os.Exit(1)
 	}

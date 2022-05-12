@@ -1,16 +1,18 @@
-package main
+package daemon
 
 import (
 	"log"
 	"time"
 
+	"github.com/Vico1993/rob-clip/config"
 	"github.com/sevlyar/go-daemon"
 	"github.com/spf13/viper"
 )
 
 var (
-	stop = make(chan struct{})
+	stop = false
 	done = make(chan struct{})
+	list = []string{}
 )
 
 func isWordAlreadyInList(word string) bool {
@@ -32,7 +34,7 @@ LOOP:
 			list = append(list, GetValue())
 
 			viper.Set("DAEMON_WORD", list)
-			err := viper.WriteConfigAs(getConfigFilePath())
+			err := viper.WriteConfigAs(config.GetConfigFilePath())
 			if err != nil {
 				log.Fatal("Can't write value in config file at " + err.Error())
 			}
@@ -41,22 +43,20 @@ LOOP:
 		// Every Second
 		time.Sleep(time.Second)
 
-		select {
-		case <-stop:
+		if stop {
 			break LOOP
-		default:
 		}
 	}
 	done <- struct{}{}
 }
 
-func startDaemon() {
+func StartDaemon() {
 	cntxt := &daemon.Context{
-		PidFileName: getConfigFolder() + "/daemon.pid",
+		PidFileName: config.GetConfigFolder() + "/daemon.pid",
 		PidFilePerm: 0644,
-		LogFileName: getConfigFolder() + "/daemon.log",
+		LogFileName: config.GetConfigFolder() + "/daemon.log",
 		LogFilePerm: 0640,
-		WorkDir:     getConfigFolder(),
+		WorkDir:     config.GetConfigFolder(),
 		Umask:       027,
 		Args:        []string{"[rob-clip]"},
 	}

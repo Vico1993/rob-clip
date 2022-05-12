@@ -1,17 +1,17 @@
 package main
 
-import "github.com/Vico1993/rob-clip/cmd"
-
-var (
-  list = []string{}
+import (
+	"github.com/Vico1993/rob-clip/cmd"
+	"github.com/Vico1993/rob-clip/config"
+	"github.com/Vico1993/rob-clip/daemon"
 )
 
 
 func main() {
 	// Initialisation of the config
-	initConfig()
+	config.InitConfig()
 
-	startDaemon()
+	daemon.StartDaemon()
 
-	cmd.Execute(list)
+	cmd.Execute()
 }

@@ -1,4 +1,4 @@
-package main
+package config
 
 import (
 	"log"
@@ -7,15 +7,15 @@ import (
 	"github.com/spf13/viper"
 )
 
-func getConfigFileName() (string) {
+func GetConfigFileName() (string) {
 	return "/config.json"
 }
 
-func getConfigFilePath() (string) {
-	return getConfigFolder() + getConfigFileName()
+func GetConfigFilePath() (string) {
+	return GetConfigFolder() + GetConfigFileName()
 }
 
-func getConfigFolder() (string) {
+func GetConfigFolder() (string) {
 	homedir, err := os.UserHomeDir()
 	if err != nil {
 		homedir = "./"
@@ -24,8 +24,8 @@ func getConfigFolder() (string) {
 	return homedir + "/.rob-clip"
 }
 
-func initConfig () {
-	path := getConfigFolder()
+func InitConfig () {
+	path := GetConfigFolder()
 
 	if _, err := os.Stat(path); os.IsNotExist(err) {
 		err = os.MkdirAll(path, 0755)
@@ -34,7 +34,7 @@ func initConfig () {
 		}
 	}
 
-	configFilePath := getConfigFilePath()
+	configFilePath := GetConfigFilePath()
 
 	if _, err := os.Stat(configFilePath); os.IsNotExist(err) {
 		var file, err = os.Create(configFilePath)
@@ -44,17 +44,22 @@ func initConfig () {
         defer file.Close()
 
 		// Set default
-		viper.Set("DEAMON_STARTED", false)
-		err = viper.WriteConfigAs(configFilePath)
-		if err != nil {
-			log.Fatal("Can't write value in config file at " + err.Error())
-		}
+		UpdateDaemonStatus(false)
 	}
 
-	viper.SetConfigFile(getConfigFilePath())
+	viper.SetConfigFile(GetConfigFilePath())
 
 	err := viper.ReadInConfig()
 	if err != nil {
 		log.Fatal("Fatal error config file: %w \n", err)
+	}
+}
+
+func UpdateDaemonStatus(status bool) {
+	// Set default
+	viper.Set("DEAMON_STARTED", status)
+	err := viper.WriteConfigAs(GetConfigFilePath())
+	if err != nil {
+		log.Fatal("Can't write value in config file at " + err.Error())
 	}
 }
